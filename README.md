@@ -1,2 +1,6 @@
-# ProjetSondageGeotechnique
+# Projet : Sondage Géotechnique
 Ce répertoire rassemble les codes utilisés pour la réalisation du projet de département de première année à l'École Nationale des Ponts et Chaussées &lt;&lt; Pilotage par intelligence artificielle d’une sondeuse géotechnique >>.
+
+## Contextualisation
+  Pour construire un ouvrage, il est nécessaire de connaître le sol sur lequel on construit. En effet, la nature du sol, ses caractéristiques mécaniques et physico-chimiques sont des facteurs à prendre en compte pour sécuriser un ouvrage. Ces connaissances peuvent être obtenues grâce à un sondage géotechnique qui est << une investigation du sous-sol, réalisée avec ou sans forage d’un trou >>. Il existe effectivement différentes méthodes de sondages, mais nous nous concentrerons uniquement sur des méthodes destructives. Ces méthodes détruisent le sol sondé, et la nature du sol se déduit du comportement de la machine et de la réponse du sol. En particulier, il ne s'agit pas de carottages. Les données à notre disposition ont été obtenues grâce à de telles méthodes.
+  Cependant, à ce jour, la détermination de la nature du sol est réalisée par le sondeur, ce qui introduit une source d’erreurs potentielles. En ajoutant à cela le coût important de ces méthodes, il serait intéressant d’automatiser ce processus de détermination de la nature du sol. Pour ce faire, nous allons donc implémenter une intelligence
