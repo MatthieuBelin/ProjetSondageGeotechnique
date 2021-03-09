@@ -1,4 +1,4 @@
-# Fichier qui regroupe toutes les fonctions en lien avec les classifieurs
+# Ce fichier regroupe toutes les fonctions en lien avec les classifieurs
 
 from preprocessing import *
 from manipulations import *
@@ -14,7 +14,7 @@ from sklearn.neural_network import MLPClassifier
 
 
 def RNAClassifier(data):
-    """Fonction qui entraine et teste un RNA pour classifier les sols"""
+    """Première fonction qui entraine et teste un RNA pour classifier les sols"""
 
     print("***Pré-traitement des donnees***")
 
@@ -24,10 +24,11 @@ def RNAClassifier(data):
     # On récupére les features et les label
     x, y = featuresLabel(data_usable)
 
+    # On sépare la base de donnees en une base d'entrainement et une de test
     print("[Separation en set d'entrainement et de test]")
     x_train, x_test, y_train, y_test = train_test_split(x, y, stratify=y, test_size=0.2, shuffle=True)
 
-    # Scale + encodage
+    # Mise a l'echelle et encodage
     scaling(x_train, x_test)
 
     transformer = LabelEncoder()
@@ -113,14 +114,13 @@ def supprDoublon(tab):
     for element in liste_pure:
         tab.append(element)
 
-def test():
+def test_optimisation_RNAClassifier():
     
     # ----- Trace la distribution suivie par le log d'une variable suivant la distribution powerlognorm que l'on va choisir pour le paramètre alpha -----
         
     fig, ax = plt.subplots(1, 1)
 
-    c, s = 1, 1 # c, jsp ce qu'il fait ; s règle la variance pour la gaussienne suivie par le log.
-
+    c, s = 1, 1
     y = stats.powerlognorm.rvs(c, s, scale=0.01, size=10000) # scale règle le centrage.
 
     ax.hist(np.log10(y), bins=30)
@@ -138,6 +138,7 @@ def test():
     hidden_layer_sizes = [tuple(np.random.randint(20, 35, np.random.randint(3, 5, 1))) for i in range(500)]
     supprDoublon(hidden_layer_sizes)
     
+    # Parametres a modifier suivant ce que nous voulons tester
     param = {
         "alpha": stats.powerlognorm(1, 1, scale=0.01),
         "hidden_layer_sizes": hidden_layer_sizes,
@@ -145,34 +146,33 @@ def test():
         "learning_rate": ["constant", "invscaling", "adaptive"],
         "learning_rate_init": stats.powerlognorm(1, 1, scale=0.001),
         "batch_size": np.arange(200, 500, 10) # batch_size : nombre de données sur lesquelles l'estimateur s'entraine
-    } # "learning_rate" est que pour le solver sgd
+    } # "learning_rate" n'est que pour le solver sgd
 
     RNAClassifier_random_search(excel_table, base_estimator, param, 1)
 
-test()
-
-# Train SVC et affiche la precision
+# Entraine SVC et affiche la precision
 def training_SVC(x_train, y_train, x_test, y_test):
     model_SVC = SVC(kernel='linear', gamma='scale', shrinking=False)
-    # training
+    # Entrainement
     model_SVC.fit(X_train_scaled, y_train_encode)
     # calcul de précision
     print(f'precision SVC de: {model_SVC.score(X_test_scaled, y_test_encode)*100} %')
 
 
-# Train Kneighbors et affiche la precision
+# Entraine Kneighbors et affiche la precision
 def training_kneighbors(x_train, y_train, x_test, y_test, k):
     model = KNeighborsClassifier(n_neighbors=k)
     model.fit(x_train, y_train)
     print(f'precision KNeighborsClassifier avec {k} voisins de: {model.score(x_test, y_test) *100} %')
 
 
-# Train SGDClassifier et affiche la precision
+# Entraine SGDClassifier et affiche la precision
 def training_SGDClassifier(x_train, y_train, x_test, y_test):
     model = SGDClassifier(random_state=0)
     model.fit(x_train, y_train)
     print(f'precision SGDClassifier de: {model.score(x_test, y_test) *100} %')
-    
+
+# Exemple de tests concernant sur les classifieurs
 if __name__ == '__main__':
     excel_table = readMultipleCsv('names')
     data_usable = BDDminimal(excel_table)
