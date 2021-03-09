@@ -259,3 +259,42 @@ if __name__ == '__main__':
     print(base_train)
     print(base_test)
 
+    
+def SortiePhoto(X_test,y_test,model):
+    coupures =[0]
+    compteur_erreurs = []  # contient les indices des erreurs de prédiction
+    nombre_strate = len(y_test)
+    for i in range(2, len(y_test)):
+        if y_test[i - 1] != y_test[i]:
+            coupures.append(i) #Contient les indices des changements de couches
+
+    prediction = model.predict(X_test)
+
+    H = 800 #hauteur
+    L = 300 #largeur
+    font = ImageFont.truetype(r'C:\Users\galie\Desktop\Projets\SondageGeotechnique-main\Sondage_V2\arial.ttf', 12)
+    im = Image.new('RGB', (L, H+100), (255, 255, 255))
+    draw = ImageDraw.Draw(im)
+
+    for j in range(0,nombre_strate):
+        print(prediction[j],y_test[j])
+        if prediction[j]!=y_test[j]:
+            compteur_erreurs.append(j)
+            draw.rectangle((30,50 + (j/nombre_strate) * H, 210, 50 + ((j+1)/nombre_strate)*H), fill=(255, 0, 0), outline=(255, 0, 0))
+        else:
+            draw.rectangle((30, 50 + (j/nombre_strate) * H, 210, 50 + ((j+1)/nombre_strate)*H), fill=(0, 255, 0),
+                           outline=(0, 255, 0))
+
+    for i in range(1,len(coupures)):
+        draw.line((15,50+(coupures[i]/nombre_strate)*H,20,50+(coupures[i]/nombre_strate)*H),fill=(0, 0, 200), width=2)
+        draw.text((0,((coupures[i]-coupures[i-1])/2 + coupures[i-1])*H/nombre_strate +50),y_test[coupures[i-1]],font=font,fill='blue')
+    draw.text((0, ((nombre_strate - coupures[len(coupures)-1]) / 2 + coupures[len(coupures)-1]) * H / nombre_strate + 50),
+              y_test[nombre_strate-1], font=font, fill='blue')
+    draw.line((15,50, 20, 50), fill=(0, 0, 200), width=2)
+    draw.line((15,H+50, 20, H+50), fill=(0, 0, 200), width=2)
+    draw.line((20, H+50, 20, 50), fill=(0, 0, 200), width=2)
+    print(coupures)
+    print(compteur_erreurs)
+    print(100-((len(compteur_erreurs)/nombre_strate)*100))
+
+    im.save('test.jpg',quality=100)
