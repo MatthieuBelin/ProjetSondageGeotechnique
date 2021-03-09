@@ -236,30 +236,21 @@ def featuresLabel(data):
 
     return features, label
 
-if __name__ == '__main__':
-    
-    # Exemple d'utilisation des dernières fonctions
-    import files_manager as fm
-    import numpy as np
-    import seaborn as sns
-    import preprocessing as pp
-    import matplotlib.pyplot as plt
-    import pandas as pd
-    import scipy.stats as stats
+def printConfusionmatrix(X_test, y_test, model):
+    #Trace la matrice de confusion en pourcentage, normalisée par ligne
+    poids = np.unique(y_test,
+                      return_counts=True) 
+    disp, ax = plt.subplots(figsize=(10, 10))
+    conf_mat = confusion_matrix(y_test,model.predict(X_test),labels=poids[0],normalize='true')
+    conf_mat = conf_mat*100
+    for i in range(len(conf_mat)):
+        for j in range(len(conf_mat[0])):
+            conf_mat[i][j] = round(conf_mat[i][j],3)
+    disp = ConfusionMatrixDisplay(confusion_matrix=conf_mat,display_labels=poids[0])
+    disp.plot(ax=ax)
+    disp.ax_.set_title('Matrice de confusion normalisée par label véritable')
+    plt.show()
 
-    excel_table = fm.readMultipleCsv('names')
-    test = gatherSheets(excel_table)
-    test[test == 0] = np.nan
-    test.drop('Vr', axis=1, inplace=True)
-    test.dropna(axis=0, inplace=True)
-    test.reset_index(drop=True, inplace=True)
-
-    base_train, base_test = train_test_split_couche(test)
-
-    print(base_train)
-    print(base_test)
-
-    
 def SortiePhoto(X_test,y_test,model):
     coupures =[0]
     compteur_erreurs = []  # contient les indices des erreurs de prédiction
@@ -298,3 +289,29 @@ def SortiePhoto(X_test,y_test,model):
     print(100-((len(compteur_erreurs)/nombre_strate)*100))
 
     im.save('test.jpg',quality=100)
+
+
+if __name__ == '__main__':
+    
+    # Exemple d'utilisation
+    import files_manager as fm
+    import numpy as np
+    import seaborn as sns
+    import preprocessing as pp
+    import matplotlib.pyplot as plt
+    import pandas as pd
+    import scipy.stats as stats
+
+    excel_table = fm.readMultipleCsv('names')
+    test = gatherSheets(excel_table)
+    test[test == 0] = np.nan
+    test.drop('Vr', axis=1, inplace=True)
+    test.dropna(axis=0, inplace=True)
+    test.reset_index(drop=True, inplace=True)
+
+    base_train, base_test = train_test_split_couche(test)
+
+    print(base_train)
+    print(base_test)
+
+    
