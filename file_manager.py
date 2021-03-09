@@ -1,10 +1,16 @@
+# Ce fichier comporte les fonctions qui gèrent l'interface entre le code et les fichiers
+
 import pandas as pd
 import os
 
 
 def excelToCsv(path):
-    """Saves each sheet of an excel table in a .csv file and writes the files' names in the text file named 'names'.
-    Return the number of sheets."""
+    """
+    Enregistre chaque feuille d'un tableau excel dans un fichier .csv et ecrit les noms de tous ces nouveaux fichiers dans un fichier 'names'.
+    Retourne le nombre de feuilles.
+    Cette fonction doit etre utilisee sur data.xls pour recreer les fichiers .csv s'il y a un probleme avec ceux la.
+    """
+    
     data = pd.read_excel("BDD_triee_cor.xlsx", sheet_name=None, na_values=None)
 
     # On ouvre un fichier texte pour y écrire tous les noms des nouveaux fichiers csv
@@ -37,8 +43,10 @@ def excelToCsv(path):
 
 
 def readMultipleCsv(names_file):
-    """Needs the name of the file which has all the names of the files we want to import.
-    Return a dict of dataframes."""
+    """
+    L'argument est le nom du fichier qui comporte tous les noms des fichiers '.csv' qui sont à lire.
+    Retourne un dictionnaire de DataFrames avec les donnees des fichiers csv.
+    """
 
     # On récupère le nom des fichiers qu'on veut importer
     names_to_import = []
@@ -58,8 +66,7 @@ def readMultipleCsv(names_file):
 
 def saveCsv(dict_data, names_file):
     """
-    Remove files which are on the list.
-    Save all the data on the files and update the 'names' file
+    Cette fonction enregistre les donnees dans les fichiers '.csv' correspondants et met a jour le fichier 'names'.
     """
 
     assert type(dict_data) == dict
