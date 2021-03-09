@@ -1,3 +1,5 @@
+# Ce fichier comporte toutes les fonctions qui manipules les donnees.
+
 import pandas as pd
 import numpy as np
 import xlsxwriter as xlw
@@ -25,7 +27,9 @@ def replaceIdByGrounds(data):
 
 
 def cleanBDD(data):
-    """Fonction qui prend en argument un dataframe et qui lui enlève tout les np.nan"""
+    """
+    Fonction qui prend en argument un dataframe et qui lui enlève tout les np.nan
+    """
 
     # On remplace les noms des sols par leurs indices dans groundType pour pouvoir utiliser dropna
     replaceGroundsById(data)
@@ -45,7 +49,9 @@ def cleanBDD(data):
 
 
 def isClean(data):
-    """Vérification de l'abscence de np.nan"""
+    """
+    Vérification de l'abscence de np.nan
+    """
 
     # On remplace les noms des sols par leurs indices dans groundType pour pouvoir utiliser np.isnan
     replaceGroundsById(data)
@@ -86,7 +92,9 @@ def compteur(data):
 
 
 def createRecap(dict_data):
-    """Utilise compteur pour toutes les feuilles et enregistre le recap en .xlsx"""
+    """
+    Utilise compteur pour toutes les feuilles et enregistre le recap en .xlsx
+    """
 
     nbtypes = len(groundType)
 
@@ -115,7 +123,9 @@ def createRecap(dict_data):
 # Affichage de graphs
 
 def gatherSheets(dict_data):
-    """Fonction qui assemble toutes les feuilles en une seule base de donnee qu'elle retourne"""
+    """
+    Fonction qui assemble toutes les feuilles en une seule base de donnee qu'elle retourne
+    """
 
     keys = list(dict_data.keys())
     data = dict_data[keys[0]]
@@ -123,11 +133,13 @@ def gatherSheets(dict_data):
         data = data.append(dict_data[keys[i]], ignore_index=True)
     return data
 
+
 # Construction de la base de test et d'entrainement en conservant les couches intactes
 
-
 def rassemblementCouches(init_data):
-    """Fonction qui assemble toutes les feuilles en une seule base de donnee qu'elle retourne"""
+    """
+    Fonction qui assemble toutes les feuilles en une seule base de donnee qu'elle retourne
+    """
 
     if type(init_data) == dict:
         keys = list(init_data.keys())
@@ -139,7 +151,9 @@ def rassemblementCouches(init_data):
     return data
 
 def repartition(tab_couches, test_size):
-    """Cette fonction repartie le mieux possible le tableau en 2 tableau conservant chaque couche"""
+    """
+    Cette fonction repartie le mieux possible le tableau en 2 tableau conservant chaque couche
+    """
 
     base_test, base_train = [], []
     nbr_elem_couche = [len(tab_couches[i]) for i in range(len(tab_couches))]
@@ -179,8 +193,10 @@ def repartition(tab_couches, test_size):
     return base_train, base_test
 
 def train_test_split_couche(data, test_size=0.2):
-    """Cette fonction prend les donnéees qui sont assemblées mais pas mélangées et renvoie 2 dataframe, le test set
-    et le train set """
+    """
+    Cette fonction prend les donnéees qui sont assemblées mais pas mélangées et renvoie 2 dataframes, le test set
+    et le train set
+    """
 
     ## On crée le dictionnaire qui regroupe toutes les couches
 
