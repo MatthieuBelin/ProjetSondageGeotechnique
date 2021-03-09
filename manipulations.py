@@ -229,6 +229,13 @@ def train_test_split_couche(data, test_size=0.2):
 
     return rassemblementCouches(base_train), rassemblementCouches(base_test)
 
+def featuresLabel(data):
+    """Separe les donnees en features et label"""
+    features = data.drop('sol', axis=1)
+    label = data['sol']
+
+    return features, label
+
 if __name__ == '__main__':
     
     # Exemple d'utilisation des dernières fonctions
