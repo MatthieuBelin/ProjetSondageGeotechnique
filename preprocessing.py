@@ -40,21 +40,3 @@ def inverse_transforme(couple_data):
         if couple_data == (logGranulometrie[i], argilosite[i]):
             return groundType[i]
     print("erreur")
-
-def printConfusionmatrix(X_test, y_test, model):
-    """
-    Trace la matrice de confusion en pourcentage, normalisée par ligne
-    """
-    
-    poids = np.unique(y_test,
-                      return_counts=True) 
-    disp, ax = plt.subplots(figsize=(10, 10))
-    conf_mat = confusion_matrix(y_test,model.predict(X_test),labels=poids[0],normalize='true')
-    conf_mat = conf_mat*100
-    for i in range(len(conf_mat)):
-        for j in range(len(conf_mat[0])):
-            conf_mat[i][j] = round(conf_mat[i][j],3)
-    disp = ConfusionMatrixDisplay(confusion_matrix=conf_mat,display_labels=poids[0])
-    disp.plot(ax=ax)
-    disp.ax_.set_title('Matrice de confusion normalisée par label véritable')
-    plt.show()
