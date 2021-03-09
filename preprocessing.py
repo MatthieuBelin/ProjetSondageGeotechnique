@@ -1,3 +1,5 @@
+# Ce fichier comporte les fonctions concernants le pretraitement
+
 import sklearn.preprocessing as prepro
 import numpy as np
 import pandas as pd
@@ -15,8 +17,10 @@ critere = critere.transpose()
 
 #-----Label-----
 def transformerGranuArgi(data):
-    """Ajoute 2 colonnes qui transforment les sols avec nos criteres"""
-
+    """
+    Ajoute 2 colonnes qui transforment les sols avec nos criteres
+    """
+    
     # Création des array pour datafrme : [granulo, argilo]
     label = np.array([[logGranulometrie[groundType.index(data['sol'][i])], argilosite[groundType.index(data['sol'][i])]] for i in range(len(data['sol']))])
     df_label = pd.DataFrame(label, columns = ['Log_Granulo', 'Argilosite'])
@@ -24,24 +28,21 @@ def transformerGranuArgi(data):
     return pd.concat([data, df_label], axis = 1)
 
 
-def separation(dict_data):
-    # Séparation de la base de données en un groupe 'train' et un groupe 'test'
-    cv = sk.KFold(5, shuffle=True)
-
 def inverse_transforme(couple_data):
-    # Fonctions inverse_transform adaptée pour notre critère, qui prend un couple en paramètre et lui associe sa roche
+    """
+    Fonctions inverse_transform adaptée pour notre critère, qui prend un couple en paramètre et lui associe sa roche
+    """
+    
     for i in range(groundType):
         if couple_data == (logGranulometrie[i], argilosite[i]):
             return groundType[i]
     print("erreur")
 
-def inversion_liste(dict_data):
-    # Inversion complète de la liste
-    df = dict_data.copy()
-    
-    
 def printConfusionmatrix(X_test, y_test, model):
-    #Trace la matrice de confusion en pourcentage, normalisée par ligne
+    """
+    Trace la matrice de confusion en pourcentage, normalisée par ligne
+    """
+    
     poids = np.unique(y_test,
                       return_counts=True) 
     disp, ax = plt.subplots(figsize=(10, 10))
