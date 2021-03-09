@@ -11,6 +11,9 @@ import matplotlib.pyplot as plt
 groundType = ['A', 'AL', 'AM', 'AS', 'B', 'C', 'G', 'GY', 'L', 'M', 'MC', 'MS', 'R', 'SL', 'S']
 logGranulometrie = np.array([-2.68, -2.3, -2, -1.82, 3.6, 2.7, 0.9, 3., -1.7, 2., 2.18, 1.78, -1.3, -1., -0.3])
 argilosite = np.array([8, 7, 8, 6, 0, 0, 0, 0, 3, 0, 0, 0, 0, 2, 1])
+# Mise a l'echelle de la classification
+logGranulometrie = (logGranulometrie - logGranulometrie.mean())/logGranulometrie.std()
+argilosite = (argilosite - argilosite.mean())/argilosite.std()
 
 critere = np.array([logGranulometrie, argilosite])
 critere = critere.transpose()
