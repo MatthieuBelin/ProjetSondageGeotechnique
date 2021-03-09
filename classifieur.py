@@ -150,6 +150,198 @@ def test_optimisation_RNAClassifier():
 
     RNAClassifier_random_search(excel_table, base_estimator, param, 1)
 
+    def RNA_cross_val(data, base_estimator, n_jobs=-3):
+    print("***Pré-traitement des donnees***")
+
+    # On récupere toutes les donnees utilisables
+    data_usable = BDDminimal(data)
+
+    # On récupére les features et les label
+    x, y = featuresLabel(data_usable)
+
+    print("[Separation en set d'entrainement et de test]")
+    x_train, x_test, y_train, y_test = train_test_split(x, y, stratify=y, test_size=0.2, shuffle=True)
+
+    # Scale + encodage
+    scaling(x_train, x_test)
+
+    transformer = LabelEncoder()
+    y_train_encode = transformer.fit_transform(y_train).ravel()
+
+    print("[Preparation pour cross-validation]")
+
+    # Separation base test / validation
+    cv = StratifiedKFold(n_splits=5, shuffle=True)
+
+    scores = cross_val_score(base_estimator, x_train, y_train_encode, cv=cv, n_jobs=n_jobs)
+
+    print(scores)
+
+
+
+def alpha_validation_curve(data, base_estimator, n_jobs=-3):
+    print("***Pré-traitement des donnees***")
+
+    # On récupere toutes les donnees utilisables
+    data_usable = BDDminimal(data)
+
+    # On récupére les features et les label
+    x, y = featuresLabel(data_usable)
+
+    print("[Separation en set d'entrainement et de test]")
+    x_train, x_test, y_train, y_test = train_test_split(x, y, stratify=y, test_size=0.2, shuffle=True)
+
+    # Scale + encodage
+    scaling(x_train, x_test)
+
+    transformer = LabelEncoder()
+    y_train_encode = transformer.fit_transform(y_train).ravel()
+
+    print("[Preparation pour cross-validation]")
+
+    # Separation base test / validation
+    cv = StratifiedKFold(n_splits=3, shuffle=True)
+
+    # ----- Paramétrage de la validation curve -----
+
+    # Choix du paramètre et de son intervalle de recherche
+    param_range = np.logspace(-11, 0, 55)
+
+    # Calcul de la validation curve
+    train_scores, valid_scores = validation_curve(base_estimator, x_train, y_train_encode,
+                                                  "alpha", param_range,
+                                                  cv=cv, n_jobs=n_jobs)
+
+    # Tracé de la validation curve
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    validation_scores_mean = np.mean(valid_scores, axis=1)
+    validation_scores_std = np.std(valid_scores, axis=1)
+
+    fig, ax = plt.subplots(1, 1)
+    ax.set_title("Validation curve on alpha for Adam")
+    ax.set_xlabel("Alpha")
+    ax.set_ylabel("Score")
+
+    lw = 2
+    ax.semilogx(param_range, train_scores_mean, label="Training score",
+                color="darkorange", lw=lw)
+    ax.fill_between(param_range, train_scores_mean - train_scores_std,
+                    train_scores_mean + train_scores_std, alpha=0.2,
+                    color="darkorange", lw=lw)
+    ax.semilogx(param_range, validation_scores_mean, label="Cross-validation score",
+                color="navy", lw=lw)
+    ax.fill_between(param_range, validation_scores_mean - validation_scores_std,
+                    validation_scores_mean + validation_scores_std, alpha=0.2,
+                    color="navy", lw=lw)
+    plt.legend(loc="best")
+    plt.show()
+
+    return (train_scores, valid_scores)
+
+
+def layers_validation_curve(data, base_estimator, n_jobs=-3):
+    print("***Pré-traitement des donnees***")
+
+    # On récupere toutes les donnees utilisables
+    data_usable = BDDminimal(data)
+
+    # On récupére les features et les label
+    x, y = featuresLabel(data_usable)
+
+    print("[Separation en set d'entrainement et de test]")
+    x_train, x_test, y_train, y_test = train_test_split(x, y, stratify=y, test_size=0.2, shuffle=True)
+
+    # Scale + encodage
+    scaling(x_train, x_test)
+
+    transformer = LabelEncoder()
+    y_train_encode = transformer.fit_transform(y_train).ravel()
+
+    print("[Preparation pour cross-validation]")
+
+    # Separation base test / validation
+    cv = StratifiedKFold(n_splits=3, shuffle=True)
+
+    # ----- Paramétrage de la validation curve -----
+
+    # Choix du paramètre et de son intervalle de recherche
+    param_range = range(1, 10)
+    hidden_layers_range = [tuple([60 for _ in range(i)]) for i in param_range]
+    # param_range = range(10, 171, 10)
+    # hidden_layers_range = [(i,i,i,i,i) for i in param_range]
+
+    # Calcul de la validation curve
+    train_scores, valid_scores = validation_curve(base_estimator, x_train, y_train_encode,
+                                                  "hidden_layer_sizes", hidden_layers_range,
+                                                  cv=cv, n_jobs=n_jobs)
+
+    # Tracé de la validation curve
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    validation_scores_mean = np.mean(valid_scores, axis=1)
+    validation_scores_std = np.std(valid_scores, axis=1)
+
+    fig, ax = plt.subplots(1, 1)
+    ax.set_title("Validation curve on number of layers for SGD")
+    ax.set_xlabel("Number of layers")
+    ax.set_ylabel("Score")
+
+    lw = 2
+    ax.plot(param_range, train_scores_mean, label="Training score",
+                color="darkorange", lw=lw)
+    ax.fill_between(param_range, train_scores_mean - train_scores_std,
+                    train_scores_mean + train_scores_std, alpha=0.2,
+                    color="darkorange", lw=lw)
+    ax.plot(param_range, validation_scores_mean, label="Cross-validation score",
+                color="navy", lw=lw)
+    ax.fill_between(param_range, validation_scores_mean - validation_scores_std,
+                    validation_scores_mean + validation_scores_std, alpha=0.2,
+                    color="navy", lw=lw)
+    plt.legend(loc="best")
+    plt.show()
+
+    return (train_scores, valid_scores)
+
+
+def trace_VC():
+    excel_table = readMultipleCsv('names')
+
+    # === Modèles de départs ===
+
+    # base_estimator = MLPClassifier(solver="sgd", activation='relu', batch_size=250, learning_rate='adaptive',
+    #                                learning_rate_init=0.003803490162088419, max_iter=1000, verbose=True,
+    #                                hidden_layer_sizes=(50, 30, 57, 51, 56), alpha=0.00579294106283857)
+
+    # base_estimator = MLPClassifier(solver="adam", activation='relu', batch_size=440,
+    #                                    learning_rate_init=0.0036049822428060574, max_iter=1000, verbose=True,
+    #                                    hidden_layer_sizes= (31, 56, 58, 41), alpha=0.006600250942968936)
+
+    # === Modèles standardisés ===
+
+    base_estimator = MLPClassifier(solver="sgd", activation='relu', batch_size=250, learning_rate='adaptive',
+                                   learning_rate_init=0.003803490162088419, max_iter=1000, verbose=True,
+                                   hidden_layer_sizes=(60, 60, 60, 60), alpha=1e-5)
+
+    # base_estimator = MLPClassifier(solver="adam", activation='relu', batch_size=440,
+    #                                    learning_rate_init=0.0036049822428060574, max_iter=1000, verbose=True,
+    #                                    hidden_layer_sizes= (60, 60, 60, 60), alpha=1e-5)
+
+    # === Traçage des learning curves et recherche des scores moyens maximaux ===
+
+    # train_scores, valid_scores = alpha_validation_curve(excel_table, base_estimator)
+    train_scores, valid_scores = layers_validation_curve(excel_table, base_estimator)
+    valid_mean = np.mean(valid_scores, axis=1)
+
+    # arg_max = np.argmax(valid_mean)
+    # print(np.logspace(-11, 0, 55)[arg_max])
+    # print(valid_mean[arg_max])
+
+    arg_max = np.argmax(valid_mean)
+    print(range(1, 10)[arg_max])
+    print(valid_mean[arg_max])
+    
+    
 # Entraine SVC et affiche la precision
 def training_SVC(x_train, y_train, x_test, y_test):
     model_SVC = SVC(kernel='linear', gamma='scale', shrinking=False)
