@@ -290,7 +290,111 @@ def SortiePhoto(X_test,y_test,model):
 
     im.save('test.jpg',quality=100)
 
+    
+def score_par_type_de_sol(model):
+    '''Fonction qui renvoie les graphes d'apprentissage par type de sol  '''
 
+    excel_table = fm.readMultipleCsv('names')
+    data_usable = BDDminimal(excel_table, suppr_Pr=True)
+
+    base_train, base_test = train_test_split_couche(data_usable)
+
+    x_train, y_train = featuresLabel(base_train)
+    x_test, y_test = featuresLabel(base_test)
+
+    # Préparation de la base test
+
+    scalerX = StandardScaler()
+    x_train1 = scalerX.fit_transform(x_train)
+    x_test = scalerX.transform(x_test)
+    data_test = pd.DataFrame(x_test, columns=["z", "VIA", "Po", "Pi", "Cr"])
+    y_test = pd.DataFrame.to_numpy(y_test)
+    Dico_sol_test = {}
+    data_test['sol'] = y_test
+    for type in groundType:
+        Dico_sol_test[type] = []
+    i = 0
+    for type_sol in data_test['sol']:
+        Dico_sol_test[type_sol].append(data_test.iloc[i])
+        i += 1
+    # Préparation de la base d'entrainement
+
+    y_train1 = y_train
+    data = pd.DataFrame(x_train1, columns=["z", "VIA", "Po", "Pi", "Cr"])
+    y_train1 = pd.DataFrame.to_numpy(y_train1)
+    data['sol'] = y_train1
+
+    Dico_sol = {}
+
+    for type in groundType:
+        Dico_sol[type] = []
+    i = 0
+    for type_sol in data['sol']:
+        Dico_sol[type_sol].append(data.iloc[i])
+        i += 1
+
+    clefs = list(Dico_sol.keys())
+
+    # Coupe de la base d'entraiement à la proportion p
+
+    proportion = np.linspace(41, 100, 30)
+    list_graph = []
+    list_prop_graph = []
+    for p in proportion:
+        proportions_grap = []
+        Dico_sol1 = {}
+
+        print(p)
+
+        for clef in clefs:
+            p_sol = int(len(Dico_sol[clef]) * (p / 100))
+            proportions_grap.append(p_sol)
+            Dico_sol1[clef] = Dico_sol[clef][0:p_sol]
+
+        x_train_def = []
+        y_train1 = []
+
+        for i in range(len(clefs)):
+            for j in range(len(Dico_sol1[clefs[i]])):
+                x_train_def.append(pd.DataFrame.to_numpy(Dico_sol1[clefs[i]][j]))
+                y_train1.append(Dico_sol1[clefs[i]][j][-1])
+
+        x_train1 = np.delete(x_train_def, 5, 1)
+
+        # Entraînement du modèle
+        model.fit(x_train1, y_train1)
+
+        # Evaluation du score
+
+        score_sol = []
+
+        for i in range(len(clefs)):
+            x_test1 = Dico_sol_test[clefs[i]]
+            if len(x_test1) == 0:
+                score_sol.append(0)
+            else:
+                x_test1 = np.delete(x_test1, 5, 1)
+                y_pred = model.predict(x_test1)
+                score = 0
+                for j in range(0, len(y_pred)):
+                    if y_pred[j] == clefs[i]:
+                        score += 1
+                score_sol.append(100 * score / len(y_pred))
+
+        list_graph.append(score_sol)
+        list_prop_graph.append(proportions_grap)
+
+    # Tracé des graphes
+    list_graph = np.transpose(list_graph)
+    list_prop_graph = np.transpose(list_prop_graph)
+
+    for i in range(0, len(clefs)):
+        plt.plot(list_prop_graph[i], list_graph[i])
+        plt.title(clefs[i])
+        plt.show()
+        
+        
+        
 if __name__ == '__main__':
     
     # Exemple d'utilisation
