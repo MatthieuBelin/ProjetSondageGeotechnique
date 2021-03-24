@@ -1,10 +1,15 @@
 # Ce fichier regroupe toutes les fonctions en lien avec les classifieurs
 
+import matplotlib.pyplot as plt
+
 import scipy.stats as stats
+from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import cross_val_score, train_test_split, validation_curve, StratifiedKFold, \
     RandomizedSearchCV, GridSearchCV
 from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import LabelEncoder
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 
 from files_manager import *
 from manipulations import *
@@ -26,7 +31,9 @@ def RNAClassifier(data):
     x_train, x_test, y_train, y_test = train_test_split(x, y, stratify=y, test_size=0.2, shuffle=True)
 
     # Mise a l'echelle et encodage
-    scaling(x_train, x_test)
+    scalerX = StandardScaler()
+    x_train = scalerX.fit_transform(x_train)
+    x_test = scalerX.transform(x_test)
 
     transformer = LabelEncoder()
     y_train_encode = transformer.fit_transform(y_train).ravel()
