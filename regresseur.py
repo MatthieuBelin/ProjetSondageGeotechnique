@@ -1,15 +1,11 @@
 # Ce fichier contient toutes les fonctions concernant les regresseurs
 
-import sklearn.preprocessing as prepro
-import numpy as np
-import pandas as pd
-import sklearn.model_selection as sk
-from sklearn.model_selection import StratifiedShuffleSplit, train_test_split, validation_curve, StratifiedKFold, \
-    RandomizedSearchCV, GridSearchCV
-from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from sklearn.model_selection import learning_curve
-from sklearn.multioutput import  MultiOutputRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.multioutput import MultiOutputRegressor
+from sklearn.neural_network import MLPRegressor
+
+from preprocessing import *
+
 
 # Fonctions pour convertir les resultats de regresseur en sol
 
@@ -48,13 +44,14 @@ def scorePrediction(prediction_sol, sol_attendu):
 
     return nombre_juste / len(prediction_sol)
 
-   
+
 # Pour normaliser notre classification
 groundType = ['A', 'AL', 'AM', 'AS', 'B', 'C', 'G', 'GY', 'L', 'M', 'MC', 'MS', 'R', 'SL', 'S']
 logGranulometrie = np.array([-2.68, -2.3, -2, -1.82, 3.6, 2.7, 0.9, 3., -1.7, 2., 2.18, 1.78, -1.3, -1., -0.3])
 argilosite = np.array([8, 7, 8, 6, 0, 0, 0, 0, 3, 0, 0, 0, 0, 2, 1])
-logGranulometrie = (logGranulometrie - logGranulometrie.mean())/logGranulometrie.std()
-argilosite = (argilosite - argilosite.mean())/argilosite.std()
+logGranulometrie = (logGranulometrie - logGranulometrie.mean()) / logGranulometrie.std()
+argilosite = (argilosite - argilosite.mean()) / argilosite.std()
+
 
 def crossValidationMLPR(X, Y):
     """Fonction qui essaie plusieurs possibilités"""
@@ -70,7 +67,9 @@ def crossValidationMLPR(X, Y):
     }
 
     print('***Definition des modeles a entrainer***')
-    mlpr = [MLPRegressor(solver='adam', max_iter=1000, alpha=1e-5, activation='tanh', hidden_layer_sizes=param['hidden_layer_sizes'][i]) for i in range(len(param['hidden_layer_sizes']))]
+    mlpr = [MLPRegressor(solver='adam', max_iter=1000, alpha=1e-5, activation='tanh',
+                         hidden_layer_sizes=param['hidden_layer_sizes'][i]) for i in
+            range(len(param['hidden_layer_sizes']))]
     multioutput_rna = [MultiOutputRegressor(modele) for modele in mlpr]
 
     # Score de resultat justes sur le set de validation
