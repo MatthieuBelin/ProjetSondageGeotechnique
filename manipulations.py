@@ -133,6 +133,37 @@ def gatherSheets(dict_data):
         data = data.append(dict_data[keys[i]], ignore_index=True)
     return data
 
+# Automatisation de quelques taches sur la BDD
+def BDDminimal(data, suppr_Pr=False):
+    """Fonction qui trie toute les lignes ou il manque des données"""
+    bdd_mini = gatherSheets(data)
+
+    if suppr_Pr:
+        bdd_mini.drop('Pr', axis=1, inplace=True)
+    bdd_mini[bdd_mini == 0] = np.nan
+    bdd_mini.drop('Vr', axis=1, inplace=True)
+    bdd_mini.dropna(axis=0, inplace=True)
+    bdd_mini.reset_index(drop=True, inplace=True)
+
+    return bdd_mini
+
+
+def featuresLabel(data):
+    """Separe les donnees en features et label"""
+    features = data.drop('sol', axis=1)
+    label = data['sol']
+
+    return features, label
+
+
+def scaling(X_train, X_test):
+    """Fonction qui scale les features"""
+
+    # scalerX = MinMaxScaler()
+    scalerX = StandardScaler()
+
+    X_train = scalerX.fit_transform(X_train)
+    X_test = scalerX.transform(X_test)
 
 # Construction de la base de test et d'entrainement en conservant les couches intactes
 
