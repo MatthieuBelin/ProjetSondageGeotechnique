@@ -1,16 +1,13 @@
 # Ce fichier regroupe toutes les fonctions en lien avec les classifieurs
 
-from preprocessing import *
-from manipulations import *
-from file_manager import *
-
-import numpy as np
 import scipy.stats as stats
-import matplotlib.pyplot as plt
 from sklearn.model_selection import cross_val_score, train_test_split, validation_curve, StratifiedKFold, \
     RandomizedSearchCV, GridSearchCV
-from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import LabelEncoder
+
+from file_manager import *
+from manipulations import *
 
 
 def RNAClassifier(data):
@@ -355,6 +352,7 @@ def training_SVC(x_train, y_train, x_test, y_test):
     model_SVC.fit(X_train_scaled, y_train_encode)
     # calcul de précision
     print(f'precision SVC de: {model_SVC.score(X_test_scaled, y_test_encode)*100} %')
+
 
 # Entraine Kneighbors et affiche la precision
 def training_kneighbors(x_train, y_train, x_test, y_test, k):
