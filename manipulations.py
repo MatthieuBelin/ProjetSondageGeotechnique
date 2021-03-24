@@ -2,6 +2,7 @@
 
 import xlsxwriter as xlw
 from PIL import Image, ImageFont, ImageDraw
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.preprocessing import StandardScaler
 
 from preprocessing import *
@@ -35,7 +36,7 @@ def cleanBDD(data):
     # On remplace les noms des sols par leurs indices dans groundType pour pouvoir utiliser dropna
     replaceGroundsById(data)
     manque_valeur = data.isna()['sol']
-    for i in range(len(manque_valeur)):
+    for i in range(1, len(manque_valeur)-1):
         if (manque_valeur[i]):
             if (data['sol'][i - 1] == data['sol'][i + 1]):
                 data['sol'][i] = data['sol'][i - 1]
