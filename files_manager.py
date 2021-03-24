@@ -11,7 +11,7 @@ def excelToCsv(path):
     Cette fonction doit etre utilisee sur data.xls pour recreer les fichiers .csv s'il y a un probleme avec ceux la.
     """
 
-    data = pd.read_excel("BDD_triee_cor.xlsx", sheet_name=None, na_values=None)
+    data = pd.read_excel(path, sheet_name=None, na_values=None)
 
     # On ouvre un fichier texte pour y écrire tous les noms des nouveaux fichiers csv
     names_file = open("BDD_CSV/names", 'w')
