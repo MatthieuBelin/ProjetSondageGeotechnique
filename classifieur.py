@@ -7,7 +7,7 @@ from file_manager import *
 import numpy as np
 import scipy.stats as stats
 import matplotlib.pyplot as plt
-from sklearn.model_selection import StratifiedShuffleSplit, train_test_split, validation_curve, StratifiedKFold, \
+from sklearn.model_selection import cross_val_score, train_test_split, validation_curve, StratifiedKFold, \
     RandomizedSearchCV, GridSearchCV
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.neural_network import MLPClassifier
@@ -150,7 +150,7 @@ def test_optimisation_RNAClassifier():
 
     RNAClassifier_random_search(excel_table, base_estimator, param, 1)
 
-    def RNA_cross_val(data, base_estimator, n_jobs=-3):
+def RNA_cross_val(data, base_estimator, n_jobs=-3):
     print("***Pré-traitement des donnees***")
 
     # On récupere toutes les donnees utilisables
@@ -346,10 +346,15 @@ def trace_VC():
 def training_SVC(x_train, y_train, x_test, y_test):
     model_SVC = SVC(kernel='linear', gamma='scale', shrinking=False)
     # Entrainement
+    scalerX = StandardScaler()
+    X_train_scaled = scalerX.fit_transform(x_train)
+    X_test_scaled = scalerX.transform(x_test)
+    encoder = LabelEncoder()
+    y_train_encode = encoder.fit_transform(y_train)
+    y_test_encode = encoder.transform(y_test)
     model_SVC.fit(X_train_scaled, y_train_encode)
     # calcul de précision
     print(f'precision SVC de: {model_SVC.score(X_test_scaled, y_test_encode)*100} %')
-
 
 # Entraine Kneighbors et affiche la precision
 def training_kneighbors(x_train, y_train, x_test, y_test, k):
