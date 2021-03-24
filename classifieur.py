@@ -2,7 +2,7 @@
 
 from preprocessing import *
 from manipulations import *
-from files_manager import *
+from file_manager import *
 
 import numpy as np
 import scipy.stats as stats
