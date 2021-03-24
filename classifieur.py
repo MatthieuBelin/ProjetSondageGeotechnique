@@ -6,7 +6,7 @@ from sklearn.model_selection import cross_val_score, train_test_split, validatio
 from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import LabelEncoder
 
-from file_manager import *
+from files_manager import *
 from manipulations import *
 
 
