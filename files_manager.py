@@ -10,7 +10,7 @@ def excelToCsv(path):
     Retourne le nombre de feuilles.
     Cette fonction doit etre utilisee sur data.xls pour recreer les fichiers .csv s'il y a un probleme avec ceux la.
     """
-    
+
     data = pd.read_excel("BDD_triee_cor.xlsx", sheet_name=None, na_values=None)
 
     # On ouvre un fichier texte pour y écrire tous les noms des nouveaux fichiers csv
@@ -59,7 +59,7 @@ def readMultipleCsv(names_file):
     data = {}
     for name in names_to_import:
         data[name] = pd.read_csv(f'BDD_CSV/{name}')
-        data[name].drop('Unnamed: 0', axis = 1, inplace = True)
+        data[name].drop('Unnamed: 0', axis=1, inplace=True)
 
     return data
 
